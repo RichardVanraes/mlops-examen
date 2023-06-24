@@ -32,6 +32,7 @@ jobs:
             - name: Delete namespace
               run: kubectl delete namespace ${{env.NAMESPACE}}
               if: inputs.new_namespace
+              continue-on-error: true
             - run: kubectl create namespace ${{env.NAMESPACE}}
               if: inputs.new_namespace
               continue-on-error: true
