@@ -1,0 +1,30 @@
+name: Main
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  push:
+    branches: [ "main" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+    docker:
+        uses: ./.github/workflows/docker-publish.yml 
+        with:
+            build-push: false
+        secrets: inherit
+
+    kubernetes:
+        needs: [docker]
+        if: always()
+        uses: ./.github/workflows/kubernetes.yml 
+        with:
+            new_namespace: true
+            deploy: false
+        secrets: inherit

@@ -1,0 +1,76 @@
+name: Kubernetes
+
+on:
+    workflow_call:
+        inputs:
+            new_namespace:
+                description: 'New Namespace'
+                type: boolean
+                default: false
+                required: true
+            deploy:
+                description: 'Deploy'
+                type: boolean
+                default: false
+                required: true
+
+env:
+  REGISTRY: ghcr.io
+  REPONAME: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_FRONT: frontend
+  IMAGE_BACK: backend
+  NAMESPACE: exam-richardvanraes
+
+jobs:
+    pull-deploy:
+        runs-on: self-hosted
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v3
+
+        # Clean Namespace
+            - name: Delete namespace
+              run: kubectl delete namespace ${{env.NAMESPACE}}
+              if: inputs.new_namespace
+            - run: kubectl create namespace ${{env.NAMESPACE}}
+              if: inputs.new_namespace
+              continue-on-error: true
+            - run: kubectl config set-context --current --namespace=${{env.NAMESPACE}}
+              if: inputs.new_namespace
+              continue-on-error: true
+            - uses: bhowell2/github-substring-action@1.0.2
+              id: sha
+              with:
+                value: ${{env.IMAGE_TAG}}
+                length_from_start: 7
+            
+            - name: Log into registry ${{ env.REGISTRY }}
+              uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+              with:
+                registry: ${{ env.REGISTRY }}
+                username: ${{ github.actor }}
+                password: ${{ secrets.GIT_TOKEN }}
+
+            # Pull a Docker image
+            - name: Pull Docker image frontend
+              run: docker pull ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.REPONAME }}-${{env.IMAGE_FRONT}}:latest
+              continue-on-error: true
+            
+            - name: Pull Docker image backend
+              run: docker pull ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.REPONAME }}-${{env.IMAGE_BACK}}:latest
+              continue-on-error: true
+
+            - name: Create Deployment frontend
+              if: inputs.deploy
+              run: kubectl apply -f ${{github.workspace}}\kubernetes\deployment-front.yaml -n ${{ env.NAMESPACE }}
+
+            - name: Create Deployment backend
+              if: inputs.deploy
+              run: kubectl apply -f ${{github.workspace}}\kubernetes\deployment-back.yaml -n ${{ env.NAMESPACE }}
+
+            - name: Create Service
+              if: inputs.deploy
+              run: kubectl apply -f ${{github.workspace}}\kubernetes\service.yaml -n ${{ env.NAMESPACE }} --overwrite=true
