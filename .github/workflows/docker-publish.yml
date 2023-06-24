@@ -30,8 +30,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    outputs:
+      sha_short: ${{ steps.sha.outputs.substring }}
+ 
     steps:
+    # Get the first 7 characters of the commit SHA  
+      - uses: bhowell2/github-substring-action@1.0.2
+        id: sha
+        with:
+          value: ${{ env.IMAGE_TAG }}
+          length_from_start: 7
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -59,8 +67,9 @@ jobs:
           tags: |
             latest
             ${{ env.IMAGE_TAG }}
-            ${{ github.ref }}
-            ${{ github.sha }}
+            ${{ outputs.sha_short }}
+
+
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -84,8 +93,7 @@ jobs:
           tags: |
             latest
             ${{ env.IMAGE_TAG }}
-            ${{ github.ref }}
-            ${{ github.sha }}
+            ${{ outputs.sha_short }}
 
     # Build and push Docker image with Buildx (don't push on PR)
     # https://github.com/docker/build-push-action
