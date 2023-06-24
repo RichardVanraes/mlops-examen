@@ -26,7 +26,7 @@ env:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubunutu-latest
     permissions:
       contents: read
       packages: write
