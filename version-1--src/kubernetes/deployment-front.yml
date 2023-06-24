@@ -18,3 +18,14 @@ metadata:
         image: ghcr.io/richardvanraes/mlops-examen-frontend:latest
         ports:
         - containerPort: 80
+        env:
+        - name: NAME
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: name
+        - name: DATE
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: date
