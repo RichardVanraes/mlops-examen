@@ -67,7 +67,7 @@ jobs:
           tags: |
             latest
             ${{ env.IMAGE_TAG }}
-            ${{ outputs.sha_short }}
+            ${{ jobs.outputs.sha_short }}
 
 
 
@@ -93,7 +93,7 @@ jobs:
           tags: |
             latest
             ${{ env.IMAGE_TAG }}
-            ${{ outputs.sha_short }}
+            ${{ jobs.outputs.sha_short }}
 
     # Build and push Docker image with Buildx (don't push on PR)
     # https://github.com/docker/build-push-action
