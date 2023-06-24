@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  REPONAME: ${{ github.repository }}
+  REPONAME: richardvanraes
   IMAGE_TAG: ${{ github.sha }}
   IMAGE_FRONT: frontend
   IMAGE_BACK: backend
