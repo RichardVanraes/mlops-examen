@@ -18,6 +18,9 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_FRONT: frontend
+  IMAGE_BACK: backend
 
 
 jobs:
@@ -49,20 +52,50 @@ jobs:
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
-        id: meta
+        id: meta-front
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ env.IMAGE_FRONT }}
+          tags: |
+            latest
+            ${{ env.IMAGE_TAG }}
+            ${{ github.ref }}
+            ${{ github.sha }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
-        id: build-and-push
+        id: build-and-push-front
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
-          context: version-1--src
+          context: version-1--src/frontend
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-front.outputs.tags }}
+          labels: ${{ steps.meta-front.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+
+      - name: Extract Docker metadata
+        id: meta-back
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ env.IMAGE_BACK }}
+          tags: |
+            latest
+            ${{ env.IMAGE_TAG }}
+            ${{ github.ref }}
+            ${{ github.sha }}
+
+    # Build and push Docker image with Buildx (don't push on PR)
+    # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push-back
+        uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
+        with:
+          context: version-1--src/api
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-back.outputs.tags }}
+          labels: ${{ steps.meta-back.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
