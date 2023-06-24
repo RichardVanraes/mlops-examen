@@ -29,3 +29,8 @@ metadata:
             configMapKeyRef:
               name: api-config
               key: date
+        - name: API_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: api-config
+              key: api_port
