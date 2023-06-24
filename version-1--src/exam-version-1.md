@@ -33,7 +33,7 @@ Automate the Docker builds for both the `frontend` and `backend` using GitHub Ac
 - Estimated time: 30 minutes
 
 Deploy the frontend and backend into a Kubernetes deployment and use a NodePort service to open them on port `30000` and `30001`.
-Create a namespace `exam-nathansegers` (using your own name ofcourse)
+Create a namespace `exam-richardvanraes` 
 
 The api requires an environment variable `NAME` and `DATE`, apply these using a ConfigMap.
 Test using the `/docker_test` endpoint on the backend by surfing to it on your browser or through Swagger, you should see the environment variables you set up.
