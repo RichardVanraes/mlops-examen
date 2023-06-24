@@ -66,11 +66,16 @@ jobs:
             - name: Create Deployment frontend
               if: inputs.deploy
               run: kubectl apply -f ${{github.workspace}}\kubernetes\deployment-front.yaml -n ${{ env.NAMESPACE }}
-
+              continue-on-error: true
             - name: Create Deployment backend
               if: inputs.deploy
               run: kubectl apply -f ${{github.workspace}}\kubernetes\deployment-back.yaml -n ${{ env.NAMESPACE }}
-
-            - name: Create Service
+              continue-on-error: true
+            - name: Create Service backend
               if: inputs.deploy
-              run: kubectl apply -f ${{github.workspace}}\kubernetes\service.yaml -n ${{ env.NAMESPACE }} --overwrite=true
+              run: kubectl apply -f ${{github.workspace}}\kubernetes\service-back.yaml -n ${{ env.NAMESPACE }} --overwrite=true
+              continue-on-error: true
+            - name: Create Service frontend
+              if: inputs.deploy
+              run: kubectl apply -f ${{github.workspace}}\kubernetes\service-front.yaml -n ${{ env.NAMESPACE }} --overwrite=true
+              continue-on-error: true
