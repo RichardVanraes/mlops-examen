@@ -54,11 +54,11 @@ jobs:
 
             # Pull a Docker image
             - name: Pull Docker image frontend
-              run: docker pull ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.REPONAME }}-${{env.IMAGE_FRONT}}:latest
+              run: docker pull ${{ env.REGISTRY }}/${{ env.REPONAME }}-${{env.IMAGE_FRONT}}:latest
               continue-on-error: true
             
             - name: Pull Docker image backend
-              run: docker pull ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.REPONAME }}-${{env.IMAGE_BACK}}:latest
+              run: docker pull ${{ env.REGISTRY }}/${{ env.REPONAME }}-${{env.IMAGE_BACK}}:latest
               continue-on-error: true
 
             - name: Create Deployment frontend
