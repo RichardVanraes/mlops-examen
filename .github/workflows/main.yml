@@ -26,5 +26,5 @@ jobs:
         uses: ./.github/workflows/kubernetes.yml 
         with:
             new_namespace: true
-            deploy: false
+            deploy: true
         secrets: inherit
